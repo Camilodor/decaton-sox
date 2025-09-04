@@ -12,27 +12,38 @@ class UsuariosService {
     lateinit var jdbcTemplate: JdbcTemplate
 
     fun obtenerUsuarios(): List<Usuarios> {
-        val sql = "SELECT * FROM users"
+        val sql = """
+            SELECT users.*, roles.nombre AS rol_nombre
+            FROM users
+            LEFT JOIN roles ON users.role_id = roles.id
+        """.trimIndent()
         return jdbcTemplate.query(sql) { rs, _ ->
             Usuarios(
                 id = rs.getInt("id"),
                 nombre = rs.getString("nombre"),
                 email = rs.getString("email"),
                 password = rs.getString("password"),
-                role_id = rs.getInt("role_id")
+                role_id = rs.getInt("role_id") ,
+                rolNombre = rs.getString("rol_nombre")
             )
         }
     }
 
     fun obtenerUsuarioPorId(id: Int): Usuarios? {
-        val sql = "SELECT * FROM users WHERE id = ?"
+        val sql = """
+            SELECT users.*, roles.nombre AS rol_nombre
+            FROM users
+            LEFT JOIN roles ON users.role_id = roles.id
+            WHERE users.id = ?
+        """.trimIndent()
         return jdbcTemplate.query(sql, arrayOf(id)) { rs, _ ->
             Usuarios(
                 id = rs.getInt("id"),
                 nombre = rs.getString("nombre"),
                 email = rs.getString("email"),
                 password = rs.getString("password"),
-                role_id = rs.getInt("role_id")
+                role_id = rs.getInt("role_id"),
+                rolNombre = rs.getString("rol_nombre")
             )
         }.firstOrNull()
     }
@@ -53,7 +64,8 @@ class UsuariosService {
 
     fun actualizarUsuario(id: Int, user: Usuarios): Int {
         val sql = """
-            UPDATE users SET nombre = ?, email = ?, password = ?, role_id = ?
+            UPDATE users 
+            SET nombre = ?, email = ?, password = ?, role_id = ?
             WHERE id = ?
         """.trimIndent()
         return jdbcTemplate.update(
@@ -72,14 +84,21 @@ class UsuariosService {
     }
 
     fun login(email: String, password: String): Usuarios? {
-        val sql = "SELECT * FROM users WHERE email = ? AND password = ?"
+        val sql = """
+            SELECT users.*, roles.nombre AS rol_nombre
+            FROM users
+            LEFT JOIN roles ON users.role_id = roles.id
+            WHERE users.email = ? AND users.password = ?
+        """.trimIndent()
+
         return jdbcTemplate.query(sql, arrayOf(email, password)) { rs, _ ->
             Usuarios(
                 id = rs.getInt("id"),
                 nombre = rs.getString("nombre"),
                 email = rs.getString("email"),
                 password = rs.getString("password"),
-                role_id = rs.getInt("role_id")
+                role_id = rs.getInt("role_id"),
+                rolNombre = rs.getString("rol_nombre")
             )
         }.firstOrNull()
     }

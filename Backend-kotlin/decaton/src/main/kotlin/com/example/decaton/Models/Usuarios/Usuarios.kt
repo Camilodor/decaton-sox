@@ -5,5 +5,6 @@ class Usuarios (
  val nombre: String,
  val email: String,
  val password: String,
- val role_id: Int? = null
+ val role_id: Int? = null,
+ val rolNombre: String? = null
 )
