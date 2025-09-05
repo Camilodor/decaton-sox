@@ -1,4 +1,4 @@
-package com.example.decaton.Controllers.Avisos
+package com.example.decaton.Controllers.AvisosController
 
 
 import com.example.decaton.Models.Avisos.Avisos
